@@ -1,7 +1,7 @@
 #include "Maze.h"
 #include "MCell.h"
 
-Maze::Maze(const int n, const int m)
+Maze::Maze(int n, int m)
 {
 	m_field = new MCell[n * m];
 	this->n = n;
@@ -17,6 +17,7 @@ Maze::~Maze()
 
 const MCell& Maze::cell(int i, int j) const
 {
+	if (isBadPoint(i, j)) return MCell();
 	return m_field[i * n + j];
 }
 
@@ -24,6 +25,7 @@ bool Maze::hasConnection(int i1, int j1, int i2, int j2)
 {
 	int i = min(i1, i2);
 	int j = min(j1, j2);
+	if (isBadPoint(i, j) || (i1 != i2 && j1 != j2)) return false;
 	MCell* point = &m_field[i * n + j];
 	return point->down() || point->right();
 }
@@ -31,6 +33,11 @@ bool Maze::hasConnection(int i1, int j1, int i2, int j2)
 bool Maze::makeConnection(int i1, int j1, int i2, int j2)
 {
 	return Connection(i1, j1, i2, j2, true);
+}
+
+bool Maze::isBadPoint(int i, int j) const
+{
+	return i < 0 || j < 0 || j >= m || i >= n;
 }
 
 char Maze::getSymbol(bool up, bool down, bool left, bool right)
@@ -46,7 +53,7 @@ char Maze::getSymbol(bool up, bool down, bool left, bool right)
 			if (left)
 				return right ? 193 : 217;
 			else
-				return right ? 192 : 1;
+				return right ? 192 : '0';
 		}
 	}
 	else {
@@ -54,22 +61,22 @@ char Maze::getSymbol(bool up, bool down, bool left, bool right)
 			if (left)
 				return right ? 194 : 191;
 			else
-				return right ? 218 : 1;
+				return right ? 218 : '0';
 		}
 		else {
 			if (left)
-				return right ? 196 : 1;
+				return right ? 196 : '0';
 			else
-				return 1;
+				return '0';
 		}
 	}
-	return 1;
 }
 
 bool Maze::Connection(int i1, int j1, int i2, int j2, bool connetion)
 {
-	int i = min(i1, j1);
+	int i = min(i1, i2);
 	int j = min(j1, j2);
+	if (i < 0 || j < 0 || j >= m || i >= n) return false;
 	if (i1 == i2)
 		m_field[i * n + j].m_right = connetion;
 	else
@@ -84,17 +91,16 @@ bool Maze::removeConnection(int i1, int j1, int i2, int j2)
 
 void Maze::printMaze()
 {
+	bool dirLeft, dirRight, dirDown, dirUp;
 	for (int i = 0; i < n; i++)
 	{
 		for (int j = 0; j < m; j++)
 		{
-			bool dirLeft, dirRight, dirDown, dirUp;
-			dirRight = m_field[i * n + j].right();
-			dirDown = m_field[i * n + j].down();
-			dirUp = i - 1 >= 0 ? m_field[(i - 1) * n + j].down() : false;
-			dirLeft = j - 1 >= 0 ? m_field[i * n + j - 1].right() : false;
-			char sym = getSymbol(dirUp, dirDown, dirLeft, dirRight);
-			cout << sym;
+			dirRight = cell(i, j).m_right;
+			dirDown = cell(i, j).m_down;
+			dirUp = hasConnection(i - 1, j, i, j);
+			dirLeft = hasConnection(i, j - 1, i, j);
+			cout << getSymbol(dirUp, dirDown, dirLeft, dirRight);
 		}
 		cout << endl;
 	}

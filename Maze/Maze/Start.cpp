@@ -3,7 +3,6 @@
 int main()
 {
 	Maze maze = Maze(5, 5);
-
 	for (int i = 0; i < maze.N(); i++)
 	{
 		for (int j = 0; j < maze.M(); j++)

@@ -22,6 +22,7 @@ public:
 	void printMaze();
 
 private:
+	bool isBadPoint(int i, int j) const;
 	char getSymbol(bool up, bool down, bool left, bool right);
 	bool Connection(int i1, int j1, int i2, int j2, bool connetion);
 	MCell* m_field = nullptr;
