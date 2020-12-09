@@ -25,7 +25,7 @@ bool Maze::hasConnection(int i1, int j1, int i2, int j2)
 {
 	int i = min(i1, i2);
 	int j = min(j1, j2);
-	if (i < 0 || j < 0 || j >= m || i >= n || (i1 != i2 && j1 != j2)) return false;
+	if (i < 0 || j < 0 || max(j1, j2) >= m || max(i1, i2) >= n || (i1 != i2 && j1 != j2)) return false;
 	MCell* point = &m_field[i * n + j];
 	return point->down() || point->right();
 }
@@ -34,7 +34,7 @@ bool Maze::makeConnection(int i1, int j1, int i2, int j2)
 {
 	int i = min(i1, i2);
 	int j = min(j1, j2);
-	if (i < 0 || j < 0 || j >= m || i >= n || (i1 != i2 && j1 != j2)) return false;
+	if (i < 0 || j < 0 || max(j1, j2) >= m || max(i1, i2) >= n || (i1 != i2 && j1 != j2)) return false;
 	if (i1 == i2)
 		m_field[i * n + j].m_right = true;
 	else
@@ -46,7 +46,7 @@ bool Maze::removeConnection(int i1, int j1, int i2, int j2)
 {
 	int i = min(i1, i2);
 	int j = min(j1, j2);
-	if (i < 0 || j < 0 || j >= m || i >= n || (i1 != i2 && j1 != j2)) return false;
+	if (i < 0 || j < 0 || max(j1, j2) >= m || max(i1, i2) >= n || (i1 != i2 && j1 != j2)) return false;
 	if (i1 == i2)
 		m_field[i * n + j].m_right = false;
 	else
@@ -56,7 +56,7 @@ bool Maze::removeConnection(int i1, int j1, int i2, int j2)
 
 void Maze::printMaze()
 {
-	bool dirLeft, dirRight, dirDown, dirUp;
+	bool dirLeft = false, dirRight, dirDown, dirUp = false;
 	for (int i = 0; i < n; i++)
 	{
 		for (int j = 0; j < m; j++)
@@ -64,8 +64,9 @@ void Maze::printMaze()
 			char symbol;
 			dirRight = cell(i, j).m_right;
 			dirDown = cell(i, j).m_down;
-			dirUp = hasConnection(i - 1, j, i, j);
-			dirLeft = hasConnection(i, j - 1, i, j);
+			dirUp = hasConnection(i - 1, j, i, j) ? cell(i - 1, j).m_down : false;
+			dirLeft = hasConnection(i, j - 1, i, j) ? cell(i, j - 1).m_right : false;
+
 			if (dirUp) {
 				if (dirDown) {
 					if (dirLeft)
