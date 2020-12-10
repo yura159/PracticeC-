@@ -3,8 +3,8 @@
 
 int main()
 {
-	Maze mase = Maze(20, 20);
-	auto* tree = MTreeNode::beginTree(0,0);
+	Maze mase = Maze(5, 5);
+	auto* tree = MTreeNode::beginTree(0, 0);
 	for(int i = 0; i < mase.M(); i++)
 		mase.makeConnection(i, 0, i + 1, 0);
 	for (int i = 0; i < mase.M(); i++) 
@@ -24,8 +24,8 @@ int main()
 	}
 	mase.printMaze();
 
-	for (int i = 0; i < 5; i++) {
-		for (int j = 0; j < 5; j++) {
+	for (int i = 0; i < mase.M(); i++) {
+		for (int j = 0; j < mase.N(); j++) {
 			if (i != 0 || j != 0) {
 				if (i != 0 && mase.hasConnection(i - 1, j, i, j))
 					tree->hasChild(i - 1, j)->addChild(i, j);
@@ -37,9 +37,9 @@ int main()
 
 	cout << endl;
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < mase.M(); i++)
 	{
-		for (int j = 0; j < 5; j++)
+		for (int j = 0; j < mase.N(); j++)
 		{
 			auto child = tree->hasChild(i, j);
 			if (child != nullptr)
